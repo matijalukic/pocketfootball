@@ -1,0 +1,32 @@
+package pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic;
+
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views.DrawableView;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views.MatchBallView;
+
+/**
+ * Created by Matija on 31 Jan 19.
+ */
+
+public class MatchBall extends PlayerBall {
+
+    private MatchBallView matchBallView;
+
+    public MatchBall(GameLogic game, float x, float y, float diameter, int color) {
+        super(game, x, y, diameter, color);
+    }
+
+    @Override
+    public void moveBall(float velX, float velY) {
+        // user cant move match ball
+    }
+
+
+
+    @Override
+    public DrawableView getDrawable() {
+        if(matchBallView == null){
+            matchBallView = new MatchBallView(x, y, diameter, color);
+        }
+        return super.getDrawable();
+    }
+}

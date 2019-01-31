@@ -11,14 +11,71 @@ import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views.PlayerBallView;
 
 public class PlayerBall extends DrawableViewGenerator implements Updatable {
 
-    private static float decreaseAccelerationsCoef = 0.1f;
+    protected static float decreaseAccelerationsCoef = 0.1f;
 
     private boolean selected = false;
     private PlayerBallView playerBallView;
-    private float diameter;
-    private float x, y;
-    private int color;
-    private float ax = 10000f, ay = -10000f; // acceleration vector per seconds, can be only positive
+    protected float diameter;
+    protected float x, y;
+    protected int color;
+//    private float ax = 50000f, ay = 50000f; // acceleration vector per seconds
+    
+    private float velX = 200, velY = 200;
+
+    public float getDiameter() {
+        return diameter;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public static void fixCollidedPosition(PlayerBall ballOne, PlayerBall ballTwo){
+        float avgX = (ballOne.x + ballTwo.x) /2;
+        float avgY = (ballOne.y + ballTwo.y) /2;
+
+        float collisionPointDiffOne = ballOne.diameter - (float)Math.sqrt(Math.pow(ballOne.x - avgX, 2f) + Math.pow(ballOne.y - avgY, 2f));
+        float collisionPointDiffTwo = ballOne.diameter - (float)Math.sqrt(Math.pow(ballTwo.x - avgX, 2f) + Math.pow(ballTwo.y - avgY, 2f));
+
+        // move by X axis
+        if(ballOne.x < ballTwo.x){
+            ballOne.x -= Math.cos(collisionPointDiffOne);
+            ballTwo.x += Math.cos(collisionPointDiffTwo);
+        }
+        else{
+            ballOne.x += Math.cos(collisionPointDiffOne);
+            ballTwo.x -= Math.cos(collisionPointDiffTwo);
+        }
+
+        // move by Y axis balls
+        if(ballOne.y < ballTwo.y){
+            ballOne.y -= Math.sin(collisionPointDiffOne);
+            ballTwo.y += Math.sin(collisionPointDiffTwo);
+        }
+        else{
+            ballOne.y += Math.sin(collisionPointDiffOne);
+            ballTwo.y -= Math.sin(collisionPointDiffTwo);
+        }
+    }
+
+    public static void resolveCollision(PlayerBall ballOne, PlayerBall ballTwo, float dt){
+
+        float newOneVelX = ballTwo.velX;
+        float newOneVelY = ballTwo.velY;
+
+        float newTwoVelX = ballOne.velX;
+        float newTwoVelY = ballOne.velY;
+
+//        ballOne.setAcceleration(ballOne.calculateNewAccelerationX(newVelX1, dt), ballOne.calculateNewAccelerationY(newVelY1, dt));
+//        ballTwo.setAcceleration(ballTwo.calculateNewAccelerationX(newVelX2, dt), ballOne.calculateNewAccelerationY(newVelY2, dt));
+        ballOne.setVelocity(newOneVelX, newOneVelY);
+        ballTwo.setVelocity(newTwoVelX, newTwoVelY);
+
+    }
 
 
 
@@ -33,69 +90,71 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
     // Lazy load View of the player view
     @Override
     public DrawableView getDrawable() {
-        if(playerBallView == null){
+        if (playerBallView == null) {
             playerBallView = new PlayerBallView(x, y, diameter, color);
         }
         return playerBallView;
     }
 
-    public void setAcceleration(float accX, float accY){
-        ax = accX;
-        ay = accY;
+    public void setVelocity(float accX, float accY) {
+        velX = accX;
+        velY = accY;
     }
 
 
-    private void detectWallCollision(){
+    private void detectWallCollision() {
         // top wall collision
-        if(y < diameter && ay < 0)
-            ay = Math.abs(ay);  // change to bottom
+        if (y < diameter && velY < 0)
+            velY = Math.abs(velY);  // change to bottom
 
         // bottom wall collision
-        if(y > (gameLogic.getH() - diameter) && ay > 0)
-            ay = -Math.abs(ay); // change the direction
+        if (y > (gameLogic.getH() - diameter) && velY > 0)
+            velY = -Math.abs(velY); // change the direction
 
         // left wall collision
-        if(x < diameter && ax < 0)
-            ax = Math.abs(ax);
+        if (x < diameter && velX < 0)
+            velX = Math.abs(velX);
 
         // right wall collision
-        if(x > (gameLogic.getW() - diameter) && ax > 0)
-            ax = -Math.abs(ax);
+        if (x > (gameLogic.getW() - diameter) && velX > 0)
+            velX = -Math.abs(velX);
     }
 
 
-    private float getTractionCoefY(){
+    private float getTractionCoefY() {
 //        double angle = Math.toRadians(Math.atan(ay / ax));
         int coef = 1;
-        if( ay > 0 )
+        if (velY > 0)
             coef = (-1);
 
-        return coef * Math.abs(ay) * decreaseAccelerationsCoef;
+        return coef * Math.abs(velY) * decreaseAccelerationsCoef;
 //        return (float)(Math.abs(Math.cos(angle)) * coef * decreaseAccelerationsCoef);
     }
 
-    private float getTractionCoefX(){
+    private float getTractionCoefX() {
 //        double angle = Math.toRadians(Math.atan(ay / ax));
         int coef = 1;
-        if( ax > 0 )
+        if (velX > 0)
             coef = (-1);
 
 
-        return coef * Math.abs(ax) * decreaseAccelerationsCoef;
+        return coef * Math.abs(velX) * decreaseAccelerationsCoef;
         //return (float)(Math.abs(Math.sin(angle)) * coef * decreaseAccelerationsCoef);
     }
 
-    private void updateAcceleration(float dt){
+    private void updateAcceleration(float dt) {
 
-        ay += getTractionCoefY() * dt;
-        ax += getTractionCoefX() * dt;
+        velY += getTractionCoefY() * dt;
+        velX += getTractionCoefX() * dt;
     }
 
-    private void updatePosition(float dt){
-        y += ay * dt * dt / 2; // acceleration per time vertical
-        x += ax * dt * dt / 2;
-    }
+    private void updatePosition(float dt) {
+//        y += ay * dt * dt / 2; // acceleration per time vertical
+//        x += ax * dt * dt / 2;
+        y += velY * dt;
+        x += velX * dt;
 
+    }
 
 
     // Updates the position and speed
@@ -110,14 +169,14 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
         playerBallView.setY(y);
     }
 
-    public void selectBall(){
+    public void selectBall() {
         this.selected = true;
 
         // highlight the view
         this.playerBallView.setOpacity(PlayerBallView.OPACITY_HIGHLIGHTED);
     }
 
-    public void removeSelection(){
+    public void removeSelection() {
         this.selected = false;
         this.playerBallView.setOpacity(PlayerBallView.OPACITY_DIMMED);
     }
@@ -127,12 +186,27 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
     }
 
     // Dot with (x,y) is in ball
-    public boolean containsDot(float x, float y){
+    public boolean containsDot(float x, float y) {
         float dx = Math.abs(this.x - x);
         float dy = Math.abs(this.y - y);
-        float distanceFromCenter = (float)Math.sqrt(dx * dx + dy * dy);
+        float distanceFromCenter = (float) Math.sqrt(dx * dx + dy * dy);
 
         // true if the distance is smaller than  diameter
         return distanceFromCenter < diameter;
     }
+
+    public boolean collide(PlayerBall otherBall) {
+        float dx = Math.abs(this.x - otherBall.x);
+        float dy = Math.abs(this.y - otherBall.y);
+        float distanceBetweenCenters = (float) Math.sqrt(dx * dx + dy * dy);
+
+        // true if the distance is smaller than  diameter
+        return distanceBetweenCenters < (diameter + otherBall.diameter);
+    }
+
+
+    public void moveBall(float velX, float velY){
+        this.setVelocity(velX, velY);
+    }
+
 }
