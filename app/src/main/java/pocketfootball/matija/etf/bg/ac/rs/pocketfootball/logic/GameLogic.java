@@ -37,8 +37,8 @@ public class GameLogic implements Updatable {
     // match ball
     private MatchBall matchBall;
 
-
-    private PlayerBall playerBall;
+    private PlayerBall redTopBall, redLeftBall, redRightBall; // red teams balls
+    private PlayerBall blueTopBall, blueLeftBall, blueRightBall; // blue teams balls
 
     // selected ball int the game
     private PlayerBall selectedBall;
@@ -52,42 +52,85 @@ public class GameLogic implements Updatable {
     /**
      * Start positions of the player balls
      */
-    private void startBallsPosition(){
+    private void initAllBalls(){
         playersBallDiameter = w / 12;
         matchBallDiameter = w / 16;
 
         // middle bottom ball
         float x = w / 2;
         float y = 2 * h / 3;
-        allPlayersBalls.add(playerBall = new PlayerBall(this, x,y, playersBallDiameter, Color.RED));
+        allPlayersBalls.add(redTopBall = new PlayerBall(this, x,y, playersBallDiameter, Color.RED));
 
         // middle top ball
         y = h / 3;
-        allPlayersBalls.add(new PlayerBall(this, x,y, playersBallDiameter, Color.BLUE));
+        allPlayersBalls.add(blueTopBall = new PlayerBall(this, x,y, playersBallDiameter, Color.BLUE));
 
         // left bottom ball
         x  = w / 4;
         y = 5 * h / 6;
-        allPlayersBalls.add(new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
+        allPlayersBalls.add( redLeftBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
 
         // left top ball
         y = h / 6;
-        allPlayersBalls.add(new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
+        allPlayersBalls.add( blueLeftBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
 
         // right bottom ball
         x = 3 * w / 4;
         y = 5 * h / 6;
-        allPlayersBalls.add(new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
+        allPlayersBalls.add( redRightBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
 
         // right top ball
         y = h / 6;
-        allPlayersBalls.add(new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
+        allPlayersBalls.add( blueRightBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
 
         // center match ball
         x = w / 2;
         y = h / 2;
         allPlayersBalls.add(matchBall = new MatchBall(this, x, y, matchBallDiameter, Color.YELLOW));
     }
+
+    private void setInitPositions(){
+        // stop all balls
+        for(PlayerBall ball: allPlayersBalls){
+            ball.setVelocity(0f, 0f);
+        }
+
+        // middle bottom ball
+        float x = w / 2;
+        float y = 2 * h / 3;
+//        allPlayersBalls.add(redTopBall = new PlayerBall(this, x,y, playersBallDiameter, Color.RED));
+        redTopBall.setPosition(x, y);
+
+
+        // middle top ball
+        y = h / 3;
+        blueTopBall.setPosition(x, y);
+
+
+        // left bottom ball
+        x  = w / 4;
+        y = 5 * h / 6;
+        redLeftBall.setPosition(x,y);
+
+        // left top ball
+        y = h / 6;
+        blueLeftBall.setPosition(x, y);
+
+        // right bottom ball
+        x = 3 * w / 4;
+        y = 5 * h / 6;
+        redRightBall.setPosition(x, y);
+
+        // right top ball
+        y = h / 6;
+        blueRightBall.setPosition(x, y);
+
+        // center match ball
+        x = w / 2;
+        y = h / 2;
+        matchBall.setPosition(x, y);
+    }
+
 
     private Goal redGoal, blueGoal;
 
@@ -153,7 +196,7 @@ public class GameLogic implements Updatable {
         makeGoals();
 
         // create players balls
-        startBallsPosition();
+        initAllBalls();
 
         setGoalPosts();
     }
@@ -187,10 +230,14 @@ public class GameLogic implements Updatable {
         detectPostCollision();
 
         // detect goals
-        if(redGoal.isGoal(matchBall))
-            Log.d("GOAL!", "RED GOALS");
-        if(blueGoal.isGoal(matchBall))
-            Log.d("GOAL!", "BLUE GOALS");
+        if(redGoal.isGoal(matchBall)){
+            setInitPositions();
+        }
+//            Log.d("GOAL!", "RED GOALS");
+        if(blueGoal.isGoal(matchBall)){
+            setInitPositions();
+        }
+//            Log.d("GOAL!", "BLUE GOALS");
 
         // delegate updates to elements
         for(Updatable updateable: allPlayersBalls){
@@ -245,9 +292,14 @@ public class GameLogic implements Updatable {
     }
 
     private void detectPostCollision(){
+        // pair the each goal post with each ball
         for(GoalPost goalPost: goalPostsList){
-            if(goalPost.detectCollsion(matchBall))
-                Log.d("GOAL POST", "COLLISION");
+            for(PlayerBall ball: allPlayersBalls){
+                if(goalPost.detectCollsion(ball)){
+                    ball.resovlePostCollision(goalPost);
+                    Log.d("GOAL POST", "COLLISION");
+                }
+            }
         }
     }
 }

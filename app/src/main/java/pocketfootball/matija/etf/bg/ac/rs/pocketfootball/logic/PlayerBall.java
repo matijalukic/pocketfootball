@@ -123,6 +123,32 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
             velX = -Math.abs(velX);
     }
 
+    public void resovlePostCollision(GoalPost goalPost){
+        // collision from top of the post
+        if( y < goalPost.getStartY() ){
+            // direction to top
+            velY = (-1) * Math.abs(velY);
+        }
+
+        // collision from bottom of the post
+        if( y > goalPost.getEndY() ){
+            // direction to bottom
+            velY = Math.abs(velY);
+        }
+
+        // collison on the left of the post
+        if( x < goalPost.getStartX()){
+            // direction to left
+            velX = (-1) * Math.abs(velX);
+        }
+
+        // collision on the right of the post
+        if( x > goalPost.getEndX() ){
+            // direction to right
+            velX = Math.abs(velX);
+        }
+    }
+
 
     private float getTractionCoefY() {
 //        double angle = Math.toRadians(Math.atan(ay / ax));
@@ -205,6 +231,11 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
 
         // true if the distance is smaller than  diameter
         return distanceBetweenCenters < (diameter + otherBall.diameter);
+    }
+
+    public void setPosition(float x, float y){
+        this.x = x;
+        this.y = y;
     }
 
 
