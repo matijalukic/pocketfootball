@@ -46,6 +46,9 @@ public class GameLogic implements Updatable {
     private float playersBallDiameter;
     private float matchBallDiameter;
 
+    private List<GoalPost> goalPostsList = new ArrayList<>(4);
+
+
     /**
      * Start positions of the player balls
      */
@@ -102,6 +105,37 @@ public class GameLogic implements Updatable {
         blueGoal = new Goal(this, startX, startY, endX, endY);
     }
 
+
+    private float goalPostWidth;
+    private float goalPostHeight;
+
+    private void setGoalPosts(){
+        goalPostWidth = w / 32;
+        goalPostHeight = h / 12;
+
+        float startX = w / 4;
+        float endX = 6 * w / 8;
+
+        float startY = 0;
+        float endY = h / 12;
+
+        // top left post
+        goalPostsList.add(new GoalPost(this, startX, startY, startX + goalPostWidth, startY + goalPostHeight));
+        // top right post
+        goalPostsList.add(new GoalPost(this, endX - goalPostWidth, endY - goalPostHeight, endX, endY));
+
+
+        startY = h * 11 / 12;
+        endY = h;
+
+        // bottom  left post
+        goalPostsList.add(new GoalPost(this, startX, startY, startX + goalPostWidth, startY + goalPostHeight));
+        // bottom right post
+        goalPostsList.add(new GoalPost(this, endX - goalPostWidth, endY - goalPostHeight, endX, endY));
+
+    }
+
+
     public GameLogic(int width, int height) {
         w = width;
         h = height;
@@ -120,6 +154,8 @@ public class GameLogic implements Updatable {
 
         // create players balls
         startBallsPosition();
+
+        setGoalPosts();
     }
 
 
@@ -146,6 +182,9 @@ public class GameLogic implements Updatable {
     public void update(float dt) {
         // detect collision before update
         detectCollision(dt);
+
+        // detect goal post collision
+        detectPostCollision();
 
         // detect goals
         if(redGoal.isGoal(matchBall))
@@ -202,6 +241,13 @@ public class GameLogic implements Updatable {
                 }
             }
 
+        }
+    }
+
+    private void detectPostCollision(){
+        for(GoalPost goalPost: goalPostsList){
+            if(goalPost.detectCollsion(matchBall))
+                Log.d("GOAL POST", "COLLISION");
         }
     }
 }

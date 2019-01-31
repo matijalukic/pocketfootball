@@ -20,7 +20,7 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
     protected int color;
 //    private float ax = 50000f, ay = 50000f; // acceleration vector per seconds
     
-    private float velX = 200, velY = 200;
+    private float velX = 0, velY = 0;
 
     public float getDiameter() {
         return diameter;
@@ -38,27 +38,30 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
         float avgX = (ballOne.x + ballTwo.x) /2;
         float avgY = (ballOne.y + ballTwo.y) /2;
 
+        float ratio = Math.abs(ballOne.y - ballTwo.y) / Math.abs(ballOne.x - ballTwo.x);
+        double fiRadians = Math.atan(ratio); // angle of the line defined by centers of the balls
+
         float collisionPointDiffOne = ballOne.diameter - (float)Math.sqrt(Math.pow(ballOne.x - avgX, 2f) + Math.pow(ballOne.y - avgY, 2f));
         float collisionPointDiffTwo = ballOne.diameter - (float)Math.sqrt(Math.pow(ballTwo.x - avgX, 2f) + Math.pow(ballTwo.y - avgY, 2f));
 
         // move by X axis
         if(ballOne.x < ballTwo.x){
-            ballOne.x -= Math.cos(collisionPointDiffOne);
-            ballTwo.x += Math.cos(collisionPointDiffTwo);
+            ballOne.x -= collisionPointDiffOne * Math.cos(fiRadians);
+            ballTwo.x += collisionPointDiffTwo * Math.cos(fiRadians);
         }
         else{
-            ballOne.x += Math.cos(collisionPointDiffOne);
-            ballTwo.x -= Math.cos(collisionPointDiffTwo);
+            ballOne.x += collisionPointDiffOne * Math.cos(fiRadians);
+            ballTwo.x -= collisionPointDiffTwo * Math.cos(fiRadians);
         }
 
         // move by Y axis balls
         if(ballOne.y < ballTwo.y){
-            ballOne.y -= Math.sin(collisionPointDiffOne);
-            ballTwo.y += Math.sin(collisionPointDiffTwo);
+            ballOne.y -= collisionPointDiffOne * Math.sin(fiRadians);
+            ballTwo.y += collisionPointDiffTwo * Math.sin(fiRadians);
         }
         else{
-            ballOne.y += Math.sin(collisionPointDiffOne);
-            ballTwo.y -= Math.sin(collisionPointDiffTwo);
+            ballOne.y += collisionPointDiffOne * Math.sin(fiRadians);
+            ballTwo.y -= collisionPointDiffTwo * Math.sin(fiRadians);
         }
     }
 
