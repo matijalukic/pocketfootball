@@ -5,4 +5,11 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="play">play</string>
+    <string name="player_one_name">Player One Name</string>
+    <string name="human">Human</string>
+    <string name="virtual">virtual</string>
+    <string name="virutal">Virutal</string>
+    <string name="player_two_name">Player Two name</string>
+    <string name="results">Results</string>
+    <string name="clear_all">Clear all</string>
 </resources>

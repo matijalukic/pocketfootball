@@ -42,7 +42,7 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
         double fiRadians = Math.atan(ratio); // angle of the line defined by centers of the balls
 
         float collisionPointDiffOne = ballOne.diameter - (float)Math.sqrt(Math.pow(ballOne.x - avgX, 2f) + Math.pow(ballOne.y - avgY, 2f));
-        float collisionPointDiffTwo = ballOne.diameter - (float)Math.sqrt(Math.pow(ballTwo.x - avgX, 2f) + Math.pow(ballTwo.y - avgY, 2f));
+        float collisionPointDiffTwo = ballTwo.diameter - (float)Math.sqrt(Math.pow(ballTwo.x - avgX, 2f) + Math.pow(ballTwo.y - avgY, 2f));
 
         // move by X axis
         if(ballOne.x < ballTwo.x){
@@ -65,22 +65,54 @@ public class PlayerBall extends DrawableViewGenerator implements Updatable {
         }
     }
 
-    public static void resolveCollision(PlayerBall ballOne, PlayerBall ballTwo, float dt){
+    public static void resolveCollision(PlayerBall ballOne, PlayerBall ballTwo){
+        double collisionAngle = Math.atan2(ballTwo.y - ballOne.y, ballTwo.x - ballOne.x); // angle for ball one
+        double collisionAngle2 = Math.atan2(ballOne.y - ballTwo.y,  ballOne.x - ballTwo.x); // for ball two
+//
+//        Log.d("ballOne", " " + ballOne.velX + ":" + ballOne.velY);
+//        Log.d("ballTwo", " " + ballTwo.velX + ":" + ballTwo.velY);
+//        Log.d("resolveCollision", Math.toDegrees(collisionAngle) + " degrees = " + Math.toDegrees(collisionAngle2));
+//
+//        ballOne.velY *=-1;
+//        ballTwo.velY *=-1;
 
-        float newOneVelX = ballTwo.velX;
-        float newOneVelY = ballTwo.velY;
+        double ballOneSin = ballOne.velIntesity() * Math.sin(ballOne.velAngle() - collisionAngle);
+        double ballTwoCos = ballTwo.velIntesity() * Math.cos(ballTwo.velAngle() - collisionAngle2);
 
-        float newTwoVelX = ballOne.velX;
-        float newTwoVelY = ballOne.velY;
+        // new
+        double newOneVelX = ballTwoCos * Math.cos(collisionAngle2) + Math.sin(collisionAngle) * ballOneSin;
+        double newOneVelY = ballTwoCos * Math.sin(collisionAngle2) + Math.cos(collisionAngle) * ballOneSin;
 
-//        ballOne.setAcceleration(ballOne.calculateNewAccelerationX(newVelX1, dt), ballOne.calculateNewAccelerationY(newVelY1, dt));
-//        ballTwo.setAcceleration(ballTwo.calculateNewAccelerationX(newVelX2, dt), ballOne.calculateNewAccelerationY(newVelY2, dt));
-        ballOne.setVelocity(newOneVelX, newOneVelY);
-        ballTwo.setVelocity(newTwoVelX, newTwoVelY);
+        // ball two
+        double ballOneCos = ballOne.velIntesity() * Math.cos(ballOne.velAngle() - collisionAngle);
+        double ballTwoSin = ballTwo.velIntesity() * Math.sin(ballTwo.velAngle() - collisionAngle2);
+
+        double newTwoVelX = ballOneCos * Math.cos(collisionAngle) + Math.sin(collisionAngle2) * ballTwoSin;
+        double newTwoVelY = ballOneCos * Math.sin(collisionAngle) + Math.cos(collisionAngle2) * ballTwoSin;
+
+//        ballOne.velY *=-1;
+//        ballTwo.velY *=-1;
+//
+
+//        float newOneVelX = ballTwo.velX;
+//        float newOneVelY = ballTwo.velY;
+//        float newTwoVelX = ballOne.velX;
+//        float newTwoVelY = ballOne.velY;
+
+
+        ballOne.setVelocity((float)newOneVelX, (float)newOneVelY);
+        ballTwo.setVelocity((float)newTwoVelX, (float)newTwoVelY);
 
     }
 
-
+    // intesity of the vector velocity
+    private double velIntesity(){
+        return Math.sqrt(Math.pow(velX, 2) + Math.pow(velY, 2));
+    }
+    // velocity vector angle in radians
+    private double velAngle(){
+        return Math.atan2(velY, velX);
+    }
 
     public PlayerBall(GameLogic game, float x, float y, float diameter, int color) {
         super(game); // invokes the parent constructor to register the DrawableViewGenerator at game

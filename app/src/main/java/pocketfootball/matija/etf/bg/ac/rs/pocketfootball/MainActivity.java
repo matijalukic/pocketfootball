@@ -19,4 +19,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(startGame);
 
     }
+
+    public void viewResults(View view){
+        Intent viewResults = new Intent(this, MatchesActivity.class);
+        startActivity(viewResults);
+    }
 }

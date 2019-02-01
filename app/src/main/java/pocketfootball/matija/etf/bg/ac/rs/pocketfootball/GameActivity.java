@@ -1,6 +1,7 @@
 package pocketfootball.matija.etf.bg.ac.rs.pocketfootball;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.gesture.Gesture;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +13,16 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.controllers.GameGestureListener;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.persist.Match;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.persist.MatchRepository;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views.GameView;
 
-public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
+public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameLogic.GameEventsListener{
 
     private GameView gameView;
     private GestureDetector mGestureDetector;
+    private MatchRepository matchRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,12 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
                 return true;
             }
         });
+
+        // set events listener of the game
+        gameView.setGameEventsListener(this);
+
+        // make repository of data
+        matchRepository = new MatchRepository(getApplication());
     }
 
 
@@ -76,4 +87,26 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         return true;
     }
 
+    // game events
+
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void gameEnds(String redPlayer, String bluePlayer, int redScore, int blueScore) {
+        Match newMatch = new Match();
+        newMatch.bluePlayer = bluePlayer;
+        newMatch.redPlayer = redPlayer;
+
+        newMatch.redScore = redScore;
+        newMatch.blueScore = blueScore;
+
+        matchRepository.insertMatch(newMatch);
+
+        Intent viewMatches = new Intent(this, MatchesActivity.class);
+        startActivity(viewMatches);
+    }
 }

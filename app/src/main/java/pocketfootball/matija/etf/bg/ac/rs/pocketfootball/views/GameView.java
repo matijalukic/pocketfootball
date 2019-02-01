@@ -15,6 +15,12 @@ import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
 public class GameView extends View  {
 
     private GameLogic gameLogic;
+    private GameLogic.GameEventsListener gameEventsListener;
+
+    public void setGameEventsListener(GameLogic.GameEventsListener gameEventsListener) {
+        this.gameEventsListener = gameEventsListener;
+    }
+
     private Paint testPaint;
     private Paint textPaint;
 
@@ -38,10 +44,15 @@ public class GameView extends View  {
         textPaint.setColor(Color.RED);
     }
 
+
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         createGame();
+        if(gameEventsListener != null){
+            gameLogic.setEventsListener(gameEventsListener);
+        }
     }
 
 

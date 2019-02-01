@@ -11,19 +11,23 @@ import java.util.List;
  */
 
 public class GameLogic implements Updatable {
-    private static final float FLING_SCALE = .05f;
+    private static final float FLING_SCALE = .2f;
 
     // Events of the game
-    interface GameEventsListener{
+    public interface GameEventsListener {
         void start(); // called when the game is started
+
+        void gameEnds(String redPlayer, String bluePlayer, int redScore, int blueScore);
     }
+
     private GameEventsListener eventsListener;
+
     public void setEventsListener(GameEventsListener eventsListener) {
         this.eventsListener = eventsListener;
     }
 
-    private boolean started = false;
-    private int w,h;
+    private boolean running = true;
+    private int w, h;
 
     // List of elements that updates positions
     List<Updatable> movableElements;
@@ -40,6 +44,8 @@ public class GameLogic implements Updatable {
     private PlayerBall redTopBall, redLeftBall, redRightBall; // red teams balls
     private PlayerBall blueTopBall, blueLeftBall, blueRightBall; // blue teams balls
 
+    private List<PlayerBall> redTeam = new ArrayList<>(3), blueTeam = new ArrayList<>(3), playingTeam = redTeam;
+
     // selected ball int the game
     private PlayerBall selectedBall;
 
@@ -48,57 +54,66 @@ public class GameLogic implements Updatable {
 
     private List<GoalPost> goalPostsList = new ArrayList<>(4);
 
+    private Score score;
+    private Timer timer;
+
 
     /**
      * Start positions of the player balls
      */
-    private void initAllBalls(){
+    private void initAllBalls() {
         playersBallDiameter = w / 12;
         matchBallDiameter = w / 16;
 
         // middle bottom ball
         float x = w / 2;
         float y = 2 * h / 3;
-        allPlayersBalls.add(redTopBall = new PlayerBall(this, x,y, playersBallDiameter, Color.RED));
+        allPlayersBalls.add(redTopBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
 
         // middle top ball
         y = h / 3;
-        allPlayersBalls.add(blueTopBall = new PlayerBall(this, x,y, playersBallDiameter, Color.BLUE));
-
+        allPlayersBalls.add(blueTopBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
         // left bottom ball
-        x  = w / 4;
+        x = w / 4;
         y = 5 * h / 6;
-        allPlayersBalls.add( redLeftBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
-
+        allPlayersBalls.add(redLeftBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
+        redLeftBall.setVelocity(0, 100);
         // left top ball
         y = h / 6;
-        allPlayersBalls.add( blueLeftBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
-
+        allPlayersBalls.add(blueLeftBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
+        blueLeftBall.setVelocity(0, -50);
         // right bottom ball
         x = 3 * w / 4;
         y = 5 * h / 6;
-        allPlayersBalls.add( redRightBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
+        allPlayersBalls.add(redRightBall = new PlayerBall(this, x, y, playersBallDiameter, Color.RED));
 
         // right top ball
         y = h / 6;
-        allPlayersBalls.add( blueRightBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
+        allPlayersBalls.add(blueRightBall = new PlayerBall(this, x, y, playersBallDiameter, Color.BLUE));
 
         // center match ball
         x = w / 2;
         y = h / 2;
         allPlayersBalls.add(matchBall = new MatchBall(this, x, y, matchBallDiameter, Color.YELLOW));
+
+        // add balls to teams
+        redTeam.add(redTopBall);
+        redTeam.add(redRightBall);
+        redTeam.add(redLeftBall);
+        blueTeam.add(blueTopBall);
+        blueTeam.add(blueLeftBall);
+        blueTeam.add(blueRightBall);
     }
 
-    private void setInitPositions(){
+    private void setInitPositions() {
         // stop all balls
-        for(PlayerBall ball: allPlayersBalls){
+        for (PlayerBall ball : allPlayersBalls) {
             ball.setVelocity(0f, 0f);
         }
 
         // middle bottom ball
         float x = w / 2;
         float y = 2 * h / 3;
-//        allPlayersBalls.add(redTopBall = new PlayerBall(this, x,y, playersBallDiameter, Color.RED));
         redTopBall.setPosition(x, y);
 
 
@@ -108,9 +123,9 @@ public class GameLogic implements Updatable {
 
 
         // left bottom ball
-        x  = w / 4;
+        x = w / 4;
         y = 5 * h / 6;
-        redLeftBall.setPosition(x,y);
+        redLeftBall.setPosition(x, y);
 
         // left top ball
         y = h / 6;
@@ -134,7 +149,7 @@ public class GameLogic implements Updatable {
 
     private Goal redGoal, blueGoal;
 
-    private void makeGoals(){
+    private void makeGoals() {
         float startX = w / 4;
         float endX = 6 * w / 8;
 
@@ -152,7 +167,7 @@ public class GameLogic implements Updatable {
     private float goalPostWidth;
     private float goalPostHeight;
 
-    private void setGoalPosts(){
+    private void setGoalPosts() {
         goalPostWidth = w / 32;
         goalPostHeight = h / 12;
 
@@ -199,6 +214,10 @@ public class GameLogic implements Updatable {
         initAllBalls();
 
         setGoalPosts();
+
+        score = new Score(this);
+
+        timer = new Timer(this, 1800f);
     }
 
 
@@ -216,86 +235,115 @@ public class GameLogic implements Updatable {
 
     // Package Access - only DrawableViewGenerator class invokes it
     // Register the new DrawableViewGenerator to the list
-    void addDrawableGeneratorElement(DrawableViewGenerator newDrawableGenerator){
+    void addDrawableGeneratorElement(DrawableViewGenerator newDrawableGenerator) {
         drawableGeneratorElements.add(newDrawableGenerator);
     }
 
     // update the game
     @Override
     public void update(float dt) {
-        // detect collision before update
-        detectCollision(dt);
+        if(running) {
+            // detect collision before update
+            detectCollision(dt);
 
-        // detect goal post collision
-        detectPostCollision();
+            // detect goal post collision
+            detectPostCollision();
 
-        // detect goals
-        if(redGoal.isGoal(matchBall)){
-            setInitPositions();
-        }
-//            Log.d("GOAL!", "RED GOALS");
-        if(blueGoal.isGoal(matchBall)){
-            setInitPositions();
-        }
-//            Log.d("GOAL!", "BLUE GOALS");
-
-        // delegate updates to elements
-        for(Updatable updateable: allPlayersBalls){
-            updateable.update(dt);
-        }
-    }
-
-    // change the
-    public void moveBall(float x, float y, float velocityX, float velocityY){
-        // for each ball set acceleration
-        if(selectedBall != null)
-            selectedBall.moveBall(FLING_SCALE * velocityX, FLING_SCALE * velocityY);
-    }
-
-    // select ball to move
-    public void selectBall(float x, float y){
-        for(PlayerBall ball: allPlayersBalls){
-            if(ball.containsDot(x, y)){
-                ball.selectBall();
-                selectedBall = ball;
+            // blue scores
+            if (redGoal.isGoal(matchBall)) {
+                score.redScores();
+                setInitPositions();
+                playingTeam = blueTeam;
             }
-            else{
-                ball.removeSelection();
+
+            // red scores
+            if (blueGoal.isGoal(matchBall)) {
+                score.blueScores();
+                setInitPositions();
+                playingTeam = redTeam;
             }
-        }
-    }
 
-    // remove selection at the end of fling
-    public void removeSelection(){
-        for(PlayerBall ball: allPlayersBalls){
-            if(ball.isSelected())
-                ball.removeSelection();
-        }
-        selectedBall = null;
-    }
 
-    // collision detection
-    private void detectCollision(float dt){
-        // Each pair
-        for(int i=0; i < allPlayersBalls.size(); i++){
-            PlayerBall ball = allPlayersBalls.get(i);
-            for(int j = i + 1; j < allPlayersBalls.size(); j++){
-                PlayerBall otherBall = allPlayersBalls.get(j);
+            // delegate updates to elements
+            for (Updatable updateable : allPlayersBalls) {
+                updateable.update(dt);
+            }
 
-                if(!ball.equals(otherBall) && ball.collide(otherBall)){
-                    PlayerBall.fixCollidedPosition(ball, otherBall);
-                    PlayerBall.resolveCollision(ball, otherBall, dt);
+            // update timer
+            timer.update(dt);
+            // if the games ends
+            if (timer.timesUp()) {
+                running = false; // stop the game
+                // notify the controller
+                if (eventsListener != null) {
+                    eventsListener.gameEnds("Matija", "Milos", (int) (Math.random() * 15), (int) (Math.random() * 15));
                 }
             }
 
         }
     }
 
-    private void detectPostCollision(){
+    public void moveBall(float x, float y, float velocityX, float velocityY) {
+        // for each ball set acceleration
+        if (selectedBall != null)
+            selectedBall.moveBall(FLING_SCALE * velocityX, FLING_SCALE * velocityY);
+    }
+
+    private void switchPlayingTeam(){
+        if(playingTeam == redTeam){
+            playingTeam = blueTeam;
+        }
+        else
+            playingTeam = redTeam;
+    }
+
+    // select ball to move
+    public void selectBall(float x, float y) {
+        // select ball from playing teams
+        for (PlayerBall ball : playingTeam) {
+            if (ball.containsDot(x, y)) {
+                ball.selectBall();
+                selectedBall = ball;
+
+                // if ball is selected switch team
+                switchPlayingTeam();
+            } else {
+                ball.removeSelection();
+            }
+        }
+    }
+
+    // remove selection at the end of fling
+    public void removeSelection() {
+        for (PlayerBall ball : allPlayersBalls) {
+            if (ball.isSelected())
+                ball.removeSelection();
+        }
+        selectedBall = null;
+    }
+
+    // collision detection
+    private void detectCollision(float dt) {
+        // Each pair
+        for (int i = 0; i < allPlayersBalls.size(); i++) {
+            PlayerBall ball = allPlayersBalls.get(i);
+            for (int j = i + 1; j < allPlayersBalls.size(); j++) {
+                PlayerBall otherBall = allPlayersBalls.get(j);
+
+                if (!ball.equals(otherBall) && ball.collide(otherBall)) {
+                    PlayerBall.fixCollidedPosition(ball, otherBall);
+                    PlayerBall.resolveCollision(ball, otherBall);
+                }
+            }
+
+        }
+    }
+
+    private void detectPostCollision() {
         // pair the each goal post with each ball
-        for(GoalPost goalPost: goalPostsList){
-            for(PlayerBall ball: allPlayersBalls){
-                if(goalPost.detectCollsion(ball)){
+        for (GoalPost goalPost : goalPostsList) {
+            for (PlayerBall ball : allPlayersBalls) {
+                if (goalPost.detectCollsion(ball)) {
                     ball.resovlePostCollision(goalPost);
                     Log.d("GOAL POST", "COLLISION");
                 }
