@@ -17,7 +17,7 @@ public class GameLogic implements Updatable {
     public interface GameEventsListener {
         void start(); // called when the game is started
 
-        void gameEnds(String redPlayer, String bluePlayer, int redScore, int blueScore);
+        void gameEnds(int redScore, int blueScore);
     }
 
     private GameEventsListener eventsListener;
@@ -217,7 +217,7 @@ public class GameLogic implements Updatable {
 
         score = new Score(this);
 
-        timer = new Timer(this, 5f);
+        timer = new Timer(this, 60f);
     }
 
 
@@ -276,7 +276,7 @@ public class GameLogic implements Updatable {
                 running = false; // stop the game
                 // notify the controller
                 if (eventsListener != null) {
-                    eventsListener.gameEnds("Matija", "Milos", (int) (Math.random() * 15), (int) (Math.random() * 15));
+                    eventsListener.gameEnds(score.getRedScore(), score.getBlueScore());
                 }
             }
 

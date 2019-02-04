@@ -96,10 +96,10 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     @Override
-    public void gameEnds(String redPlayer, String bluePlayer, int redScore, int blueScore) {
+    public void gameEnds(int redScore, int blueScore) {
         Match newMatch = new Match();
-        newMatch.bluePlayer = bluePlayer;
-        newMatch.redPlayer = redPlayer;
+        newMatch.bluePlayer = getIntent().getStringExtra(MainActivity.PLAYER_TWO_ID);
+        newMatch.redPlayer = getIntent().getStringExtra(MainActivity.PLAYER_ONE_ID);
 
         newMatch.redScore = redScore;
         newMatch.blueScore = blueScore;
