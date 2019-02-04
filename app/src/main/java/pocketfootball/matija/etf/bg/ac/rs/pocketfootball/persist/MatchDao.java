@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Dao
 public interface MatchDao {
-    @Query("SELECT * FROM `Match`")
+    @Query("SELECT M.id , COUNT(case when M.redScore > M.blueScore then 1 else null end) as redScore, COUNT(case when M.blueScore > M.redScore then 1 else null end) as blueScore, M.redPlayer, M.bluePlayer  FROM `Match` M GROUP BY redPlayer, bluePlayer")
     LiveData<List<Match>> matches();
 
     @Insert
