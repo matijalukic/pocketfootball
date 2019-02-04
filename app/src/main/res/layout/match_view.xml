@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/card_view"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:padding="16dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:hint="@string/red_team"
+            android:layout_weight="1"
+            android:id="@+id/red_team_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:hint="@string/_00"
+            android:id="@+id/red_team_score"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <TextView
+            android:text="@string/semicolon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:hint="@string/_11"
+            android:layout_weight="1"
+            android:id="@+id/blue_team_score"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:textAlignment="viewEnd"
+            android:layout_gravity="end"
+            android:hint="@string/blue_team"
+            android:id="@+id/blue_team_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

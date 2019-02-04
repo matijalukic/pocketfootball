@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     tools:context="pocketfootball.matija.etf.bg.ac.rs.pocketfootball.MatchesActivity">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/all_matches"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@id/delete_all"></ListView>
+        app:layout_constraintBottom_toTopOf="@id/delete_all"/>
+
 
     <Button
         android:text="@string/clear_all"

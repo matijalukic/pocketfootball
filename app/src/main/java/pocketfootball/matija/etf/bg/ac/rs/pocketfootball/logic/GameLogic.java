@@ -217,7 +217,7 @@ public class GameLogic implements Updatable {
 
         score = new Score(this);
 
-        timer = new Timer(this, 1800f);
+        timer = new Timer(this, 5f);
     }
 
 
@@ -345,7 +345,6 @@ public class GameLogic implements Updatable {
             for (PlayerBall ball : allPlayersBalls) {
                 if (goalPost.detectCollsion(ball)) {
                     ball.resovlePostCollision(goalPost);
-                    Log.d("GOAL POST", "COLLISION");
                 }
             }
         }

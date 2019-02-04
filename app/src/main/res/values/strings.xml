@@ -12,4 +12,9 @@
     <string name="player_two_name">Player Two name</string>
     <string name="results">Results</string>
     <string name="clear_all">Clear all</string>
+    <string name="red_team">Red team</string>
+    <string name="_11">11</string>
+    <string name="_00">00</string>
+    <string name="semicolon">:</string>
+    <string name="blue_team">Blue Team</string>
 </resources>
