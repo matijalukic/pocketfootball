@@ -15,8 +15,6 @@ public class GameLogic implements Updatable {
 
     // Events of the game
     public interface GameEventsListener {
-        void start(); // called when the game is started
-
         void gameEnds(int redScore, int blueScore);
     }
 
@@ -56,7 +54,7 @@ public class GameLogic implements Updatable {
 
     private Score score;
     private Timer timer;
-
+    private PlayerTimer playerTimer;
 
     /**
      * Start positions of the player balls
@@ -218,6 +216,8 @@ public class GameLogic implements Updatable {
         score = new Score(this);
 
         timer = new Timer(this, 60f);
+
+        playerTimer = new PlayerTimer(this);
     }
 
 
@@ -254,6 +254,7 @@ public class GameLogic implements Updatable {
                 score.redScores();
                 setInitPositions();
                 playingTeam = blueTeam;
+                playerTimer.resetTimer();
             }
 
             // red scores
@@ -261,6 +262,7 @@ public class GameLogic implements Updatable {
                 score.blueScores();
                 setInitPositions();
                 playingTeam = redTeam;
+                playerTimer.resetTimer();
             }
 
 
@@ -280,6 +282,12 @@ public class GameLogic implements Updatable {
                 }
             }
 
+            // update player timer
+            playerTimer.update(dt);
+            if(playerTimer.expired()){
+                switchPlayingTeam();
+            }
+
         }
     }
 
@@ -295,6 +303,14 @@ public class GameLogic implements Updatable {
         }
         else
             playingTeam = redTeam;
+
+        playerTimer.resetTimer();
+    }
+
+    public int getTeamColor(){
+        if(playingTeam == redTeam)
+            return Color.RED;
+        return Color.BLUE;
     }
 
     // select ball to move
