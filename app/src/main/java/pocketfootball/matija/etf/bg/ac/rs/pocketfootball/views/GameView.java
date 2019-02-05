@@ -1,6 +1,9 @@
 package pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,8 +12,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.R;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.DrawableViewGenerator;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.PlayerBall;
 
 public class GameView extends View  {
 
@@ -42,6 +47,22 @@ public class GameView extends View  {
 
         textPaint = new Paint(Paint.LINEAR_TEXT_FLAG);
         textPaint.setColor(Color.RED);
+
+    }
+
+    private void drawTeamsImage(){
+        Bitmap redTeamBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.zvezda);
+        Bitmap blueTeamBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.partizan);
+
+        // fill the red teams
+        for(PlayerBall teamMember: gameLogic.getRedTeam()){
+            ((PlayerBallView) teamMember.getDrawable()).setTeamImage(redTeamBitmap);
+        }
+
+        // fill the red teams
+        for(PlayerBall teamMember: gameLogic.getBlueTeam()){
+            ((PlayerBallView) teamMember.getDrawable()).setTeamImage(blueTeamBitmap);
+        }
     }
 
 
@@ -53,7 +74,10 @@ public class GameView extends View  {
         if(gameEventsListener != null){
             gameLogic.setEventsListener(gameEventsListener);
         }
+
+        drawTeamsImage();
     }
+
 
 
     private long currentTime = 0;

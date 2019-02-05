@@ -27,6 +27,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         setContentView(R.layout.activity_game);
         ballKickedPlayer = MediaPlayer.create(this, R.raw.ball_kick);
         goalScoredPlayer = MediaPlayer.create(this, R.raw.goal);

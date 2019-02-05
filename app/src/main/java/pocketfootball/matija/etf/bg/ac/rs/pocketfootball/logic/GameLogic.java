@@ -241,6 +241,14 @@ public class GameLogic implements Updatable {
         drawableGeneratorElements.add(newDrawableGenerator);
     }
 
+    public List<PlayerBall> getRedTeam() {
+        return redTeam;
+    }
+
+    public List<PlayerBall> getBlueTeam() {
+        return blueTeam;
+    }
+
     // update the game
     @Override
     public void update(float dt) {
@@ -296,6 +304,8 @@ public class GameLogic implements Updatable {
 
         }
     }
+
+
 
     public void moveBall(float x, float y, float velocityX, float velocityY) {
         // for each ball set acceleration
@@ -358,8 +368,8 @@ public class GameLogic implements Updatable {
                         eventsListener.ballKicked();
                     }
 
-                    PlayerBall.fixCollidedPosition(ball, otherBall);
                     PlayerBall.resolveCollision(ball, otherBall);
+                    PlayerBall.fixCollidedPosition(ball, otherBall);
                 }
             }
 

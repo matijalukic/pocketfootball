@@ -7,66 +7,84 @@
     android:layout_height="match_parent"
     tools:context="pocketfootball.matija.etf.bg.ac.rs.pocketfootball.MainActivity">
 
-    <EditText
-        android:padding="16dp"
-        android:id="@+id/player_one_name"
-        android:hint="@string/player_one_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
-    <RadioGroup
-        android:padding="16dp"
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <RadioButton
-            android:padding="16dp"
-            android:id="@+id/one_human"
-            android:text="@string/human"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <RadioButton
-            android:padding="16dp"
-            android:id="@+id/one_virtual"
-            android:text="@string/virutal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </RadioGroup>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <EditText
+                android:padding="16dp"
+                android:id="@+id/player_one_name"
+                android:hint="@string/player_one_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
 
-    <EditText
-        android:padding="16dp"
-        android:id="@+id/player_two_name"
-        android:layout_width="match_parent"
-        android:hint="@string/player_two_name"
-        android:layout_height="wrap_content" />
+            <RadioGroup
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:padding="16dp"
+                    android:id="@+id/one_human"
+                    android:text="@string/human"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <RadioButton
+                    android:padding="16dp"
+                    android:id="@+id/one_virtual"
+                    android:text="@string/virutal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:padding="16dp"
+                android:id="@+id/player_two_name"
+                android:layout_width="match_parent"
+                android:hint="@string/player_two_name"
+                android:layout_height="wrap_content" />
 
 
-    <RadioGroup
-        android:padding="16dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RadioButton
-            android:id="@+id/two_human"
-            android:padding="16dp"
-            android:text="@string/human"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <RadioGroup
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/two_human"
+                    android:padding="16dp"
+                    android:text="@string/human"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        <RadioButton
-            android:padding="16dp"
-            android:id="@+id/two_virtual"
-            android:text="@string/virutal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                <RadioButton
+                    android:padding="16dp"
+                    android:id="@+id/two_virtual"
+                    android:text="@string/virutal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-    </RadioGroup>
+            </RadioGroup>
 
+        </LinearLayout>
+
+    </LinearLayout>
 
     <Button
         android:layout_width="match_parent"
