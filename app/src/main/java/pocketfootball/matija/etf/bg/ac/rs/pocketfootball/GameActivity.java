@@ -1,18 +1,14 @@
 package pocketfootball.matija.etf.bg.ac.rs.pocketfootball;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.gesture.Gesture;
-import android.support.v7.app.ActionBar;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.controllers.GameGestureListener;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.persist.Match;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.persist.MatchRepository;
@@ -23,12 +19,17 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private GameView gameView;
     private GestureDetector mGestureDetector;
     private MatchRepository matchRepository;
+    private MediaPlayer ballKickedPlayer;
+    private MediaPlayer goalScoredPlayer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_game);
+        ballKickedPlayer = MediaPlayer.create(this, R.raw.ball_kick);
+        goalScoredPlayer = MediaPlayer.create(this, R.raw.goal);
 
         // get game view
         gameView = findViewById(R.id.game_view);
@@ -91,11 +92,6 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
 
     @Override
-    public void start() {
-
-    }
-
-    @Override
     public void gameEnds(int redScore, int blueScore) {
         Match newMatch = new Match();
         newMatch.bluePlayer = getIntent().getStringExtra(MainActivity.PLAYER_TWO_ID);
@@ -108,5 +104,17 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
         Intent viewMatches = new Intent(this, MatchesActivity.class);
         startActivity(viewMatches);
+    }
+
+
+
+    @Override
+    public void ballKicked() {
+        ballKickedPlayer.start();
+    }
+
+    @Override
+    public void goalScored() {
+        goalScoredPlayer.start();
     }
 }

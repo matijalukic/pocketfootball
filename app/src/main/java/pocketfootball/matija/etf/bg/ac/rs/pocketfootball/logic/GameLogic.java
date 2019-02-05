@@ -15,6 +15,8 @@ public class GameLogic implements Updatable {
 
     // Events of the game
     public interface GameEventsListener {
+        void ballKicked();
+        void goalScored();
         void gameEnds(int redScore, int blueScore);
     }
 
@@ -255,6 +257,8 @@ public class GameLogic implements Updatable {
                 setInitPositions();
                 playingTeam = blueTeam;
                 playerTimer.resetTimer();
+
+                eventsListener.goalScored();
             }
 
             // red scores
@@ -263,6 +267,8 @@ public class GameLogic implements Updatable {
                 setInitPositions();
                 playingTeam = redTeam;
                 playerTimer.resetTimer();
+
+                eventsListener.goalScored();
             }
 
 
@@ -347,6 +353,11 @@ public class GameLogic implements Updatable {
                 PlayerBall otherBall = allPlayersBalls.get(j);
 
                 if (!ball.equals(otherBall) && ball.collide(otherBall)) {
+                    // send ball kicked signal
+                    if(ball instanceof MatchBall || otherBall instanceof MatchBall){
+                        eventsListener.ballKicked();
+                    }
+
                     PlayerBall.fixCollidedPosition(ball, otherBall);
                     PlayerBall.resolveCollision(ball, otherBall);
                 }
