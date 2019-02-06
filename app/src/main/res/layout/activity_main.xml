@@ -8,6 +8,7 @@
     tools:context="pocketfootball.matija.etf.bg.ac.rs.pocketfootball.MainActivity">
 
     <LinearLayout
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -46,6 +47,11 @@
 
             </RadioGroup>
 
+            <ImageSwitcher
+                android:id="@+id/player_one_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></ImageSwitcher>
+
         </LinearLayout>
         <LinearLayout
             android:layout_weight="1"
@@ -82,6 +88,11 @@
 
             </RadioGroup>
 
+
+            <ImageSwitcher
+                android:id="@+id/player_two_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -99,15 +110,35 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:padding="16dp"
-        android:layout_height="wrap_content"
-        android:text="@string/results"
-        android:onClick="viewResults"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:padding="16dp"
+            android:layout_height="wrap_content"
+            android:text="@string/results"
+            android:onClick="viewResults"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:layout_height="wrap_content"
+            android:text="@string/settings"
+            android:onClick="viewSettings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+
 
 </LinearLayout>

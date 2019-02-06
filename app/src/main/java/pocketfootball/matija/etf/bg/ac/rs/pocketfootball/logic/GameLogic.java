@@ -11,7 +11,15 @@ import java.util.List;
  */
 
 public class GameLogic implements Updatable {
-    private static final float FLING_SCALE = .2f;
+    private static float FLING_SCALE = .2f;
+    private static final float MIN_FLING_SCALE = .2f;
+    private static final float INTERVAL_FLING_SCALE = 1f;
+
+    // progress from 0 to 100
+    public static void setGameSpeed(int progress)
+    {
+        FLING_SCALE = MIN_FLING_SCALE + ((float)progress) / 100 * INTERVAL_FLING_SCALE;
+    }
 
     // Events of the game
     public interface GameEventsListener {
@@ -193,6 +201,7 @@ public class GameLogic implements Updatable {
 
     }
 
+    int maxGoals = Integer.MAX_VALUE; // temp value
 
     public GameLogic(int width, int height) {
         w = width;
@@ -217,11 +226,19 @@ public class GameLogic implements Updatable {
 
         score = new Score(this);
 
-        timer = new Timer(this, 60f);
+        timer = new Timer(this, 5f);
 
         playerTimer = new PlayerTimer(this);
     }
 
+
+    public void setGameDuration(int seconds){
+        timer.setSeconds(seconds);
+    }
+
+    public void setMaxGoals(int maxGoals){
+        this.maxGoals = maxGoals;
+    }
 
     public int getW() {
         return w;
@@ -247,6 +264,11 @@ public class GameLogic implements Updatable {
 
     public List<PlayerBall> getBlueTeam() {
         return blueTeam;
+    }
+
+    // checks the number of goals
+    private boolean somebodyWon(){
+        return score.getRedScore() >= maxGoals || score.getBlueScore() >= maxGoals;
     }
 
     // update the game
@@ -288,7 +310,7 @@ public class GameLogic implements Updatable {
             // update timer
             timer.update(dt);
             // if the games ends
-            if (timer.timesUp()) {
+            if (timer.timesUp() || somebodyWon()) {
                 running = false; // stop the game
                 // notify the controller
                 if (eventsListener != null) {

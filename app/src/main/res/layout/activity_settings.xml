@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+    <TextView
+        android:textSize="24sp"
+        android:id="@+id/maximum_goals"
+        android:text="@string/maximum_goals"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/number_of_goals"
+        android:layout_below="@id/maximum_goals"
+        android:layout_width="match_parent"
+        android:hint="@string/enter_number_of_goals"
+        android:inputType="number"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textSize="24sp"
+        android:id="@+id/maximum_time"
+        android:text="@string/playing_time_in_seconds"
+        android:layout_below="@id/number_of_goals"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/number_of_seconds"
+        android:layout_below="@id/maximum_time"
+        android:layout_width="match_parent"
+        android:hint="@string/game_duration_in_seconds"
+        android:inputType="number"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textSize="24sp"
+        android:id="@+id/game_speed"
+        android:text="@string/game_speed"
+        android:layout_below="@id/number_of_seconds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <SeekBar
+        android:id="@+id/seek_game_speed"
+        android:layout_below="@id/game_speed"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textSize="24sp"
+        android:id="@+id/text_game_background"
+        android:text="@string/game_background"
+        android:layout_below="@id/seek_game_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/background_image_view"
+        android:layout_below="@id/text_game_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/grass" />
+
+
+</RelativeLayout>

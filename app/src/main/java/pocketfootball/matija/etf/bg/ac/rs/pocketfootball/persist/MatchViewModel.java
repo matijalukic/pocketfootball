@@ -27,8 +27,17 @@ public class MatchViewModel extends AndroidViewModel {
         return allMatches;
     }
 
+
+    public LiveData<List<Match>> getPlayersMatches(String playerOne, String playerTwo){
+        return matchRepository.getPlayersMatches(playerOne, playerTwo);
+    }
+
     public void deleteAll(){
         matchRepository.deleteAll();
+    }
+
+    public void deletePlayersMatches(String playerOne, String playerTwo){
+        matchRepository.deletePlayersMatches(playerOne, playerTwo);
     }
 
 }

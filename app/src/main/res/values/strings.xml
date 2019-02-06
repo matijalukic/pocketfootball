@@ -1,4 +1,12 @@
 <resources>
+    <string name="preference_file_key">gameperferences</string>
+    <string name="max_goals_key">max_goals_key</string>
+    <string name="max_goals_default_key">max_goals_default_key</string>
+    <string name="game_duration_key">game_duration_key</string>
+    <string name="game_duration_default_key">game_duration_default_key</string>
+    <string name="game_speed_key">game_speed_key</string>
+    <string name="game_bg_image_key">game_bg_image_key</string>
+
     <string name="app_name">PocketFootball</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="dummy_button">Dummy Button</string>
@@ -18,5 +26,26 @@
     <string name="blue_team">Blue Team</string>
 
     <string name="players_validation">You must fill all player's names!</string>
+    <string name="maximum_goals">Maximum Goals</string>
+    <string name="enter_number_of_goals">Enter number of goals</string>
+    <string name="playing_time_in_seconds">Playing time in seconds</string>
+    <string name="game_speed">Game speed</string>
+    <string name="settings">Settings</string>
+    <string name="game_duration_in_seconds">Game duration in seconds</string>
+    <string name="game_background">Game background</string>
+
+    <string-array name="team_images">
+        <item>zvezda</item>
+        <item>partizan</item>
+        <item>vojvodina</item>
+        <item>bosnia</item>
+        <item>croatia</item>
+    </string-array>
+
+    <string-array name="bg_images">
+        <item>concrete</item>
+        <item>grass</item>
+        <item>parquet</item>
+    </string-array>
 
 </resources>

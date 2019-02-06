@@ -18,15 +18,17 @@ public class MatchRepository {
 
 
     public MatchRepository(Application application) {
-         matchDatabase = Room.databaseBuilder(application, MatchDatabase.class, "matches")
-                .fallbackToDestructiveMigration()
-                .build();
+         matchDatabase = MatchDatabase.getDB(application);
 
          matchDao = matchDatabase.matchDao();
     }
 
     public LiveData<List<Match>> getMatches(){
         return matchDao.matches();
+    }
+
+    public LiveData<List<Match>> getPlayersMatches(String playerOne, String playerTwo){
+        return matchDao.playersMatches(playerOne, playerTwo);
     }
 
     public void insertMatch(Match newMatch){
@@ -48,6 +50,17 @@ public class MatchRepository {
                 return null;
             }
         }.execute();
+    }
+
+    public void deletePlayersMatches(String playerOne, String playerTwo){
+        new AsyncTask<String, Void, Void>(){
+            @Override
+            protected Void doInBackground(String... players) {
+                if(players.length == 2)
+                matchDao.playersMatches(players[0], players[1]);
+                return null;
+            }
+        }.execute(playerOne, playerTwo);
     }
 
 }

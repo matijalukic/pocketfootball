@@ -1,6 +1,8 @@
 package pocketfootball.matija.etf.bg.ac.rs.pocketfootball;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,12 +23,12 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private MatchRepository matchRepository;
     private MediaPlayer ballKickedPlayer;
     private MediaPlayer goalScoredPlayer;
+    private SharedPreferences sharedPreferences;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         setContentView(R.layout.activity_game);
         ballKickedPlayer = MediaPlayer.create(this, R.raw.ball_kick);
@@ -50,6 +52,17 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
         // make repository of data
         matchRepository = new MatchRepository(getApplication());
+
+        // set the images sent from intent
+        String imageNameOne = getIntent().getStringExtra(MainActivity.PLAYER_ONE_IMAGE);
+        String imageNameTwo = getIntent().getStringExtra(MainActivity.PLAYER_TWO_IMAGE);
+
+        int idImageOne = getResources().getIdentifier(imageNameOne, "drawable", getPackageName());
+        int idImageTwo = getResources().getIdentifier(imageNameTwo, "drawable", getPackageName());
+
+        gameView.setTeamImages(idImageOne, idImageTwo);
+
+
     }
 
 
@@ -103,7 +116,11 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
         matchRepository.insertMatch(newMatch);
 
-        Intent viewMatches = new Intent(this, MatchesActivity.class);
+        Intent viewMatches = new Intent(this, MatchActivity.class);
+
+        viewMatches.putExtra(MainActivity.PLAYER_ONE_ID, newMatch.redPlayer);
+        viewMatches.putExtra(MainActivity.PLAYER_TWO_ID, newMatch.bluePlayer);
+
         startActivity(viewMatches);
     }
 
