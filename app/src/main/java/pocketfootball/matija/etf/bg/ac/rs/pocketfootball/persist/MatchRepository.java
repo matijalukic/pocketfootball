@@ -57,7 +57,7 @@ public class MatchRepository {
             @Override
             protected Void doInBackground(String... players) {
                 if(players.length == 2)
-                matchDao.playersMatches(players[0], players[1]);
+                matchDao.deletePlayersMatches(players[0], players[1]);
                 return null;
             }
         }.execute(playerOne, playerTwo);

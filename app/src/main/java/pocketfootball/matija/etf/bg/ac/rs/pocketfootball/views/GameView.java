@@ -46,7 +46,14 @@ public class GameView extends View  {
         return gameLogic;
     }
 
+    private GameLogic.PlayerType redPlayerType = GameLogic.PlayerType.HUMAN;
+    private GameLogic.PlayerType bluePlayerType = GameLogic.PlayerType.HUMAN;
 
+    // saving player types
+    public void setPlayerTypes(GameLogic.PlayerType redPlayerType, GameLogic.PlayerType bluePlayerType){
+        this.redPlayerType = redPlayerType;
+        this.bluePlayerType = bluePlayerType;
+    }
 
     private void createGame(){
         gameLogic = new GameLogic(getWidth(), getHeight());
@@ -54,10 +61,13 @@ public class GameView extends View  {
         // set default values
         int preferencesNumberOfGoals = sharedPreferences.getInt(getResources().getString(R.string.max_goals_key), SettingsActivity.DEFAULT_NUMBER_OF_GOALS);
         int preferencesGameSecondsDuration = sharedPreferences.getInt(getResources().getString(R.string.game_duration_key), SettingsActivity.DEFAULT_GAME_DURATION_SECONDS);
-        int preferencesGameSpeed = sharedPreferences.getInt(getResources().getString(R.string.game_duration_key), DEFAULT_GAME_SPEED);
+        int preferencesGameSpeed = sharedPreferences.getInt(getResources().getString(R.string.game_speed_key), DEFAULT_GAME_SPEED);
 
         gameLogic.setGameDuration(preferencesGameSecondsDuration);
         gameLogic.setMaxGoals(preferencesNumberOfGoals);
+
+        // setting player types
+        gameLogic.setPlayerTypes(redPlayerType, bluePlayerType);
 
         GameLogic.setGameSpeed(preferencesGameSpeed);
 

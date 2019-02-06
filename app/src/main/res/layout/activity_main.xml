@@ -33,8 +33,10 @@
 
                 <RadioButton
                     android:padding="16dp"
+                    android:checked="true"
                     android:id="@+id/one_human"
                     android:text="@string/human"
+                    android:onClick="onPlayerOneTypeClicked"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -42,6 +44,7 @@
                     android:padding="16dp"
                     android:id="@+id/one_virtual"
                     android:text="@string/virutal"
+                    android:onClick="onPlayerOneTypeClicked"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -73,9 +76,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <RadioButton
+                    android:checked="true"
                     android:id="@+id/two_human"
                     android:padding="16dp"
                     android:text="@string/human"
+                    android:onClick="onPlayerTwoTypeClicked"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -83,6 +88,7 @@
                     android:padding="16dp"
                     android:id="@+id/two_virtual"
                     android:text="@string/virutal"
+                    android:onClick="onPlayerTwoTypeClicked"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 

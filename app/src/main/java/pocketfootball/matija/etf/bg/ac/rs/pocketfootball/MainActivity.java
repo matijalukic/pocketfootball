@@ -8,12 +8,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+
+
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
 
 public class MainActivity extends AppCompatActivity {
     final static String PLAYER_ONE_ID = "player_one_name";
@@ -30,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     List<String> imageNames;
     int indexImagePlayerOne = 0;
     int indexImagePlayerTwo = 1;
+
+    GameLogic.PlayerType redPlayerType = GameLogic.PlayerType.HUMAN;
+    GameLogic.PlayerType bluePlayerType = GameLogic.PlayerType.HUMAN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
         startGame.putExtra(PLAYER_ONE_IMAGE, imageNames.get(indexImagePlayerOne));
         startGame.putExtra(PLAYER_TWO_IMAGE, imageNames.get(indexImagePlayerTwo));
 
+        startGame.putExtra(GameLogic.RED_PLAYER_TYPE_HUMAN, redPlayerType == GameLogic.PlayerType.HUMAN);
+        startGame.putExtra(GameLogic.BLUE_PLAYER_TYPE_HUMAN, bluePlayerType == GameLogic.PlayerType.HUMAN);
+
         startActivity(startGame);
     }
 
@@ -131,6 +141,29 @@ public class MainActivity extends AppCompatActivity {
     public void viewSettings(View view) {
         Intent viewSettings = new Intent(this, SettingsActivity.class);
         startActivity(viewSettings);
+
+    }
+
+    public void onPlayerOneTypeClicked(View view) {
+
+        RadioButton clickedOn = (RadioButton) view;
+
+        if(clickedOn.getId() == R.id.one_human){
+            redPlayerType = GameLogic.PlayerType.HUMAN;
+        }
+        else
+            redPlayerType = GameLogic.PlayerType.VIRTUAL;
+
+    }
+
+    public void onPlayerTwoTypeClicked(View view) {
+        RadioButton clickedOn = (RadioButton) view;
+
+        if(clickedOn.getId() == R.id.two_human){
+            bluePlayerType = GameLogic.PlayerType.HUMAN;
+        }
+        else
+            bluePlayerType = GameLogic.PlayerType.VIRTUAL;
 
     }
 }

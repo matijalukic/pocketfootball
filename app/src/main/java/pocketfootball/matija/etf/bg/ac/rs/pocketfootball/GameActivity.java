@@ -62,7 +62,11 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
         gameView.setTeamImages(idImageOne, idImageTwo);
 
+        // setting player types
+        GameLogic.PlayerType redPlayerType = getIntent().getBooleanExtra(GameLogic.RED_PLAYER_TYPE_HUMAN, true) ? GameLogic.PlayerType.HUMAN : GameLogic.PlayerType.VIRTUAL;
+        GameLogic.PlayerType bluePlayerType = getIntent().getBooleanExtra(GameLogic.BLUE_PLAYER_TYPE_HUMAN, true) ? GameLogic.PlayerType.HUMAN : GameLogic.PlayerType.VIRTUAL;
 
+        gameView.setPlayerTypes(redPlayerType, bluePlayerType);
     }
 
 

@@ -11,14 +11,22 @@ import java.util.List;
  */
 
 public class GameLogic implements Updatable {
+    // players types
+    public static final String RED_PLAYER_TYPE_HUMAN = "RED_PLAYER_TYPE";
+    public static final String BLUE_PLAYER_TYPE_HUMAN = "BLUE_PLAYER_TYPE";
+
+    public enum PlayerType {HUMAN, VIRTUAL}
+
+    // fling scaling
     private static float FLING_SCALE = .2f;
     private static final float MIN_FLING_SCALE = .2f;
-    private static final float INTERVAL_FLING_SCALE = 1f;
+    private static final float INTERVAL_FLING_SCALE = .4f;
 
     // progress from 0 to 100
     public static void setGameSpeed(int progress)
     {
         FLING_SCALE = MIN_FLING_SCALE + ((float)progress) / 100 * INTERVAL_FLING_SCALE;
+        Log.d("FLING_SCALE", FLING_SCALE + " " + progress);
     }
 
     // Events of the game
@@ -201,7 +209,18 @@ public class GameLogic implements Updatable {
 
     }
 
-    int maxGoals = Integer.MAX_VALUE; // temp value
+    private PlayerType redPlayerType = PlayerType.HUMAN;
+    private PlayerType bluePlayerType = PlayerType.HUMAN;
+
+    public void setPlayerTypes(PlayerType redPlayerType, PlayerType bluePlayerType){
+        this.redPlayerType = redPlayerType;
+        this.bluePlayerType = bluePlayerType;
+    }
+
+
+    private int maxGoals = Integer.MAX_VALUE; // temp value
+
+    private VirtualPlayer virtualPlayer;
 
     public GameLogic(int width, int height) {
         w = width;
@@ -229,6 +248,8 @@ public class GameLogic implements Updatable {
         timer = new Timer(this, 5f);
 
         playerTimer = new PlayerTimer(this);
+
+        virtualPlayer = new VirtualPlayer(this);
     }
 
 
@@ -287,6 +308,7 @@ public class GameLogic implements Updatable {
                 setInitPositions();
                 playingTeam = blueTeam;
                 playerTimer.resetTimer();
+                virtualPlayer.restartTimer();
 
                 eventsListener.goalScored();
             }
@@ -297,6 +319,7 @@ public class GameLogic implements Updatable {
                 setInitPositions();
                 playingTeam = redTeam;
                 playerTimer.resetTimer();
+                virtualPlayer.restartTimer();
 
                 eventsListener.goalScored();
             }
@@ -318,21 +341,41 @@ public class GameLogic implements Updatable {
                 }
             }
 
+            virtualPlayer.update(dt);
+            // virtual player is playing
+            if(virtualPlayer.expired()){
+                if( playingTeamIsVirtual() ){
+                    Log.d("virtualIsPlaying", playingTeam.toString());
+                    virtualPlayer.moveRandomBall(playingTeam);
+
+                    switchPlayingTeam();
+                }
+                virtualPlayer.restartTimer();
+            }
+
             // update player timer
             playerTimer.update(dt);
             if(playerTimer.expired()){
                 switchPlayingTeam();
+                if(playingTeamIsVirtual())
+                    virtualPlayer.restartTimer();
             }
 
         }
     }
 
+    private boolean playingTeamIsVirtual(){
+        return (playingTeam == redTeam && redPlayerType == PlayerType.VIRTUAL) ||
+                (playingTeam == blueTeam && bluePlayerType == PlayerType.VIRTUAL);
+    }
 
 
     public void moveBall(float x, float y, float velocityX, float velocityY) {
         // for each ball set acceleration
         if (selectedBall != null)
             selectedBall.moveBall(FLING_SCALE * velocityX, FLING_SCALE * velocityY);
+
+        Log.d("moveBall", velocityX + " " + velocityY );
     }
 
     private void switchPlayingTeam(){
@@ -351,8 +394,16 @@ public class GameLogic implements Updatable {
         return Color.BLUE;
     }
 
+    public void selectBallVirtual(PlayerBall virtualPlayerBall){
+        selectedBall = virtualPlayerBall;
+    }
+
     // select ball to move
     public void selectBall(float x, float y) {
+        // check if playing team is not virtual
+        if(playingTeamIsVirtual())
+            return; // break
+
         // select ball from playing teams
         for (PlayerBall ball : playingTeam) {
             if (ball.containsDot(x, y)) {
