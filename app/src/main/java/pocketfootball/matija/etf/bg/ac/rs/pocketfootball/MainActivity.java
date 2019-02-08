@@ -1,10 +1,13 @@
 package pocketfootball.matija.etf.bg.ac.rs.pocketfootball;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
@@ -18,6 +21,8 @@ import java.util.List;
 
 
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
+
+import static pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views.GameView.GAME_SAVED_TIME_LEFT;
 
 public class MainActivity extends AppCompatActivity {
     final static String PLAYER_ONE_ID = "player_one_name";
@@ -38,10 +43,25 @@ public class MainActivity extends AppCompatActivity {
     GameLogic.PlayerType redPlayerType = GameLogic.PlayerType.HUMAN;
     GameLogic.PlayerType bluePlayerType = GameLogic.PlayerType.HUMAN;
 
+    Button continueButton;
+
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // preferences
+        sharedPreferences = getApplicationContext().getSharedPreferences(getResources().getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+
+        // Continue button
+        continueButton = findViewById(R.id.continue_button);
+        // set disabled if there is no
+        if(!sharedPreferences.contains(GAME_SAVED_TIME_LEFT)){
+            continueButton.setEnabled(false);
+        }
+        else
+            continueButton.setEnabled(true);
 
         // fill the image names
         imageNames = Arrays.asList(getResources().getStringArray(R.array.team_images));
@@ -102,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
             editPlayerTwo.setText(savedInstanceState.getString(PLAYER_TWO_ID));
         }
     }
+
+
 
     public void startGame(View view) {
         if(editPlayerOne.getText().toString().isEmpty() || editPlayerTwo.getText().toString().isEmpty()){
@@ -164,6 +186,29 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             bluePlayerType = GameLogic.PlayerType.VIRTUAL;
+
+    }
+
+    public void continueGame(View view) {
+        if(editPlayerOne.getText().toString().isEmpty() || editPlayerTwo.getText().toString().isEmpty()){
+            Toast.makeText(this, R.string.players_validation, Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+
+        Intent continueGame = new Intent(this, GameActivity.class);
+        continueGame.putExtra(PLAYER_ONE_ID, editPlayerOne.getText().toString());
+        continueGame.putExtra(PLAYER_TWO_ID, editPlayerTwo.getText().toString());
+        continueGame.putExtra(PLAYER_ONE_IMAGE, imageNames.get(indexImagePlayerOne));
+        continueGame.putExtra(PLAYER_TWO_IMAGE, imageNames.get(indexImagePlayerTwo));
+
+        continueGame.putExtra(GameLogic.RED_PLAYER_TYPE_HUMAN, redPlayerType == GameLogic.PlayerType.HUMAN);
+        continueGame.putExtra(GameLogic.BLUE_PLAYER_TYPE_HUMAN, bluePlayerType == GameLogic.PlayerType.HUMAN);
+
+
+        continueGame.putExtra("continueGame", true);
+
+        startActivity(continueGame);
 
     }
 }

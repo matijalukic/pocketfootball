@@ -20,6 +20,10 @@ public class Timer extends DrawableViewGenerator implements Updatable {
         this.seconds = seconds;
     }
 
+    public float getSeconds() {
+        return seconds;
+    }
+
     public void setSeconds(float seconds) {
         this.seconds = seconds;
         if(timerView != null)

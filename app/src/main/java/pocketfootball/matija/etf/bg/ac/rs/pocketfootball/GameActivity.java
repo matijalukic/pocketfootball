@@ -12,18 +12,19 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameSave;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.persist.Match;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.persist.MatchRepository;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.views.GameView;
 
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameLogic.GameEventsListener{
+    private final static String GAME_KEY = "GAME_KEY";
 
     private GameView gameView;
     private GestureDetector mGestureDetector;
     private MatchRepository matchRepository;
     private MediaPlayer ballKickedPlayer;
     private MediaPlayer goalScoredPlayer;
-    private SharedPreferences sharedPreferences;
 
 
     @Override
@@ -36,6 +37,13 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
         // get game view
         gameView = findViewById(R.id.game_view);
+
+        // inject saved game
+        if(savedInstanceState != null) {
+                // load from bundle
+                GameSave startedGame = (GameSave) savedInstanceState.getSerializable(GAME_KEY);
+                if (startedGame != null) gameView.setSavedGame(startedGame);
+        }
 
         mGestureDetector = new GestureDetector(gameView.getContext(), this);
 
@@ -67,7 +75,15 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         GameLogic.PlayerType bluePlayerType = getIntent().getBooleanExtra(GameLogic.BLUE_PLAYER_TYPE_HUMAN, true) ? GameLogic.PlayerType.HUMAN : GameLogic.PlayerType.VIRTUAL;
 
         gameView.setPlayerTypes(redPlayerType, bluePlayerType);
+
+        // game continuing
+        if(getIntent().getBooleanExtra("continueGame", false)){
+            gameView.load();
+        }
+
     }
+
+
 
 
     @Override
@@ -138,5 +154,36 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public void goalScored() {
         goalScoredPlayer.start();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // save game in bundle
+        if(gameView.getGameLogic() != null) {
+            outState.putSerializable(GAME_KEY, gameView.getGameLogic().save());
+            gameView.save();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+//        Log.d("onBackPressed", "back pressed");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        gameView.refreshTime(); // time fix because the game didnt count time
+        gameView.setPaused(false);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        gameView.setPaused(true);
+        gameView.save();
     }
 }

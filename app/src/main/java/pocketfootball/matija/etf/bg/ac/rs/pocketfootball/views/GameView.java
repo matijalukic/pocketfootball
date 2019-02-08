@@ -19,17 +19,32 @@ import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.R;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.SettingsActivity;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.DrawableViewGenerator;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameLogic;
+import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.GameSave;
 import pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic.PlayerBall;
 
 import static pocketfootball.matija.etf.bg.ac.rs.pocketfootball.SettingsActivity.DEFAULT_GAME_SPEED;
 
 public class GameView extends View  {
+    public final static String GAME_SAVED_TIME_LEFT = "savedGameTimeLeft";
+    public final static String GAME_SAVED_RED_SCORES = "savedGameRedScores";
+    public final static String GAME_SAVED_BLUE_SCORES = "savedGameBlueScores";
+    public final static String GAME_SAVED_RED_HUMAN = "savedGameRedType";
+    public final static String GAME_SAVED_BLUE_HUMAN = "savedGameBlueType";
 
     private GameLogic gameLogic;
     private GameLogic.GameEventsListener gameEventsListener;
     private SharedPreferences sharedPreferences;
     private Bitmap bgBitmap;
     private Rect wholeScreenRect;
+    private GameSave savedGame;
+
+    public void setSavedGame(GameSave savedGame) {
+        this.savedGame = savedGame;
+        if(gameLogic != null) {
+            gameLogic.load(savedGame);
+            gameLogic.startAgain();
+        }
+    }
 
     public void setGameEventsListener(GameLogic.GameEventsListener gameEventsListener) {
         this.gameEventsListener = gameEventsListener;
@@ -56,7 +71,8 @@ public class GameView extends View  {
     }
 
     private void createGame(){
-        gameLogic = new GameLogic(getWidth(), getHeight());
+        if(gameLogic == null)
+            gameLogic = new GameLogic(getWidth(), getHeight());
 
         // set default values
         int preferencesNumberOfGoals = sharedPreferences.getInt(getResources().getString(R.string.max_goals_key), SettingsActivity.DEFAULT_NUMBER_OF_GOALS);
@@ -68,6 +84,10 @@ public class GameView extends View  {
 
         // setting player types
         gameLogic.setPlayerTypes(redPlayerType, bluePlayerType);
+
+        // if it is saved game
+        if(savedGame != null)
+            gameLogic.load(savedGame);
 
         GameLogic.setGameSpeed(preferencesGameSpeed);
 
@@ -94,6 +114,10 @@ public class GameView extends View  {
         textPaint.setColor(Color.RED);
 
         sharedPreferences = getContext().getSharedPreferences(getResources().getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+    }
+
+    public void setGameLogic(GameLogic gameLogic) {
+        this.gameLogic = gameLogic;
     }
 
     public void setTeamImages(int oneDrawableId, int twoDrawableId){
@@ -130,8 +154,21 @@ public class GameView extends View  {
     }
 
 
+    private boolean paused = false;
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
 
     private long currentTime = 0;
+
+    public void refreshTime(){
+        currentTime = System.currentTimeMillis();
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -154,11 +191,53 @@ public class GameView extends View  {
 
         // update game logic
         long nowTime = System.currentTimeMillis();
-        gameLogic.update(( (float)(nowTime - currentTime) ) / 1000);
+        if(!paused)
+            gameLogic.update(( (float)(nowTime - currentTime) ) / 1000);
+
         currentTime = nowTime;
 
         invalidate();
     }
+
+    // save the state of the game
+    public void save(){
+        GameSave newGameSave = gameLogic.save();
+
+        SharedPreferences.Editor editorPreferences = sharedPreferences.edit();
+        editorPreferences.putFloat(GAME_SAVED_TIME_LEFT, newGameSave.getTimeLeft());
+        editorPreferences.putInt(GAME_SAVED_RED_SCORES, newGameSave.getRedScores());
+        editorPreferences.putInt(GAME_SAVED_BLUE_SCORES, newGameSave.getBlueScores());
+        editorPreferences.putBoolean(GAME_SAVED_RED_HUMAN, newGameSave.getRedPlayerType() == GameLogic.PlayerType.HUMAN);
+        editorPreferences.putBoolean(GAME_SAVED_BLUE_HUMAN, newGameSave.getBluePlayerType() == GameLogic.PlayerType.HUMAN);
+        editorPreferences.apply();
+
+        Log.d("Game saved", "Game saved in preferences" + newGameSave.getRedScores() + " " + newGameSave.getBlueScores());
+    }
+
+    public void load(){
+        // if it is set
+        if(sharedPreferences.contains(GAME_SAVED_TIME_LEFT)){
+            float timeLeft = sharedPreferences.getFloat(GAME_SAVED_TIME_LEFT, 0f);
+            int redScores = sharedPreferences.getInt(GAME_SAVED_RED_SCORES, 0);
+            int blueScores = sharedPreferences.getInt(GAME_SAVED_BLUE_SCORES, 0);
+            GameLogic.PlayerType redType = sharedPreferences.getBoolean(GAME_SAVED_RED_HUMAN, true) ? GameLogic.PlayerType.HUMAN : GameLogic.PlayerType.VIRTUAL;
+            GameLogic.PlayerType blueType = sharedPreferences.getBoolean(GAME_SAVED_BLUE_HUMAN, true) ? GameLogic.PlayerType.HUMAN : GameLogic.PlayerType.VIRTUAL;
+
+            // load if it is greater than 0
+            if(timeLeft > 0) {
+                setSavedGame(new GameSave(
+                        timeLeft,
+                        redScores,
+                        blueScores,
+                        redType,
+                        blueType
+                ));
+                Log.d("Game loaded", "Game loaded from preferences! " + redScores + ":" + blueScores);
+            }
+        }
+    }
+
+
 
 
 

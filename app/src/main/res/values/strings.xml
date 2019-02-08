@@ -33,6 +33,7 @@
     <string name="settings">Settings</string>
     <string name="game_duration_in_seconds">Game duration in seconds</string>
     <string name="game_background">Game background</string>
+    <string name="continue_btn_label">Continue</string>
 
     <string-array name="team_images">
         <item>zvezda</item>

@@ -102,20 +102,34 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:padding="16dp"
-        android:layout_height="wrap_content"
-        android:text="@string/play"
-        android:onClick="startGame"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/play_button"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:layout_height="wrap_content"
+            android:text="@string/play"
+            android:onClick="startGame"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/white"
+            android:layout_weight="1" />
 
+        <Button
+            android:id="@+id/continue_button"
+            android:layout_width="match_parent"
+            android:padding="16dp"
+            android:layout_height="wrap_content"
+            android:text="@string/continue_btn_label"
+            android:onClick="continueGame"
+            android:layout_weight="1"
+             />
+    </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

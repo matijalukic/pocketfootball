@@ -1,8 +1,10 @@
 package pocketfootball.matija.etf.bg.ac.rs.pocketfootball.logic;
 
 import android.graphics.Color;
+import android.os.Parcelable;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class GameLogic implements Updatable {
     public static final String RED_PLAYER_TYPE_HUMAN = "RED_PLAYER_TYPE";
     public static final String BLUE_PLAYER_TYPE_HUMAN = "BLUE_PLAYER_TYPE";
 
-    public enum PlayerType {HUMAN, VIRTUAL}
+    public enum PlayerType implements Serializable {HUMAN, VIRTUAL}
 
     // fling scaling
     private static float FLING_SCALE = .2f;
@@ -60,7 +62,9 @@ public class GameLogic implements Updatable {
     private PlayerBall redTopBall, redLeftBall, redRightBall; // red teams balls
     private PlayerBall blueTopBall, blueLeftBall, blueRightBall; // blue teams balls
 
-    private List<PlayerBall> redTeam = new ArrayList<>(3), blueTeam = new ArrayList<>(3), playingTeam = redTeam;
+    private List<PlayerBall>
+            redTeam = new ArrayList<>(3),
+            blueTeam = new ArrayList<>(3), playingTeam = redTeam;
 
     // selected ball int the game
     private PlayerBall selectedBall;
@@ -292,13 +296,21 @@ public class GameLogic implements Updatable {
         return score.getRedScore() >= maxGoals || score.getBlueScore() >= maxGoals;
     }
 
+    public void pause(){
+        running = false;
+    }
+
+    public void startAgain(){
+        running = true;
+    }
+
+
     // update the game
     @Override
     public void update(float dt) {
         if(running) {
             // detect collision before update
             detectCollision(dt);
-
             // detect goal post collision
             detectPostCollision();
 
@@ -375,7 +387,6 @@ public class GameLogic implements Updatable {
         if (selectedBall != null)
             selectedBall.moveBall(FLING_SCALE * velocityX, FLING_SCALE * velocityY);
 
-        Log.d("moveBall", velocityX + " " + velocityY );
     }
 
     private void switchPlayingTeam(){
@@ -396,6 +407,18 @@ public class GameLogic implements Updatable {
 
     public void selectBallVirtual(PlayerBall virtualPlayerBall){
         selectedBall = virtualPlayerBall;
+    }
+
+    public void load(GameSave gameSave){
+        timer.setSeconds(gameSave.getTimeLeft());
+        score.setScores(gameSave.getRedScores(), gameSave.getBlueScores());
+
+        redPlayerType = gameSave.getRedPlayerType();
+        bluePlayerType = gameSave.getBluePlayerType();
+    }
+
+    public GameSave save(){
+        return new GameSave(timer.getSeconds(), score.getRedScore(), score.getBlueScore(), redPlayerType, bluePlayerType);
     }
 
     // select ball to move

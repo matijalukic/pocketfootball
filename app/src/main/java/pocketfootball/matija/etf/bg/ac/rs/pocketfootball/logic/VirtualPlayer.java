@@ -6,8 +6,8 @@ public class VirtualPlayer implements Updatable{
     private GameLogic game;
     private float playerTimer;
 
-    private final float MIN_GAME_VELCCITY = -1000f;
-    private final float INTERVAL_GAME_VELOCITY = 2000f;
+    private final float MIN_GAME_VELCCITY = -2000f;
+    private final float INTERVAL_GAME_VELOCITY = 4000f;
 
     public VirtualPlayer(GameLogic game) {
         this.game = game;

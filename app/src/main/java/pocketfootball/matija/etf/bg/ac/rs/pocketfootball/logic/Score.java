@@ -17,6 +17,8 @@ public class Score extends DrawableViewGenerator {
 
     public Score(@NonNull GameLogic gameLogic) {
         super(gameLogic);
+        scoreView = new ScoreView();
+
     }
 
     public void blueScores(){
@@ -37,11 +39,17 @@ public class Score extends DrawableViewGenerator {
         return blueScore;
     }
 
+    public void setScores(int red, int blue){
+        redScore = red;
+        blueScore = blue;
+
+        if(scoreView != null){
+            scoreView.setScores(red, blue);
+        }
+    }
+
     @Override
     public DrawableView getDrawable() {
-        if(scoreView == null){
-            scoreView = new ScoreView();
-        }
         return scoreView;
     }
 }
